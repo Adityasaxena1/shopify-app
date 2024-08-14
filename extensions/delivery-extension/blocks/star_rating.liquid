@@ -1,0 +1,42 @@
+{% assign avg_rating = block.settings.product.metafields.demo.avg_rating.value | round %}
+{% assign show_timer = block.settings.timer %}
+{% assign scheduled_days = app.metafields.delivery.delivery_date %}
+{% assign dikhao = block.settings.product.metafields.custom.delivery_date.value %}
+
+
+
+<span style="color:{{ block.settings.colour }}">
+
+  {{ block.settings.inline }}
+  <b>{{ scheduled_days }}</b>
+  <p>this is para</p>
+
+</span>
+
+
+
+{% if show_timer %}
+
+  <img src="{{ "thumbs-up.png" | asset_img_url: '15x' }}" height="15" width="15" loading="lazy" >
+  {{ 'ratings.home.recommendationText' | t }}
+
+{% endif %}
+
+
+
+
+{% schema %}
+
+{
+  "name": "Show Delivery Date",
+  "target": "section",
+  "settings": [
+    { "type": "product", "id": "product", "label": "Product", "autofill": true },
+    { "type": "checkbox", "id": "timer", "label": "Show 24hrs Timer", "default": false, "info": "Add a 24hrs Count Down"},
+    { "type": "inline_richtext", "id": "inline", "label":"Change text", "default": {{ ratings.stars.label }} },
+    { "type": "color", "id": "colour", "label": "Date Colour", "default": "#121212"},
+  ]
+}
+
+{% endschema %}
+
