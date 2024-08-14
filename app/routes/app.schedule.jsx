@@ -48,16 +48,8 @@ export async function action({ request }) {
 
 export async function loader({ request }) {
   const { admin } = await authenticate.admin(request);
-
   const deliveries = await getAllData();
-
-  // const indays = deliveries[deliveries.length - 1]['days']
-  // const meta = await createMetaField(admin.graphql,deliveries[deliveries.length - 1]['days']);
-  // return { admin, indays };
-  // return json(meta);
   return deliveries;
-
-  // return new Response(JSON.stringify(deliveries));
 }
 
 
@@ -83,7 +75,6 @@ function ComboboxExample({ inputValue, setInputValue }) {
   );
 
   const [selectedOption, setSelectedOption] = useState();
-  // const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState(deselectedOptions);
 
   const escapeSpecialRegExCharacters = useCallback(
@@ -217,8 +208,6 @@ export default function CardDefault() {
   const submit = useSubmit();
   const navigate = useNavigate();
 
-  // const weNeed = useLoaderData();
-
   const [value, setValue] = useState();
   const [inputValue, setInputValue] = useState("");
   const handleChange = useCallback((newValue) => setValue(newValue), []);
@@ -230,7 +219,6 @@ export default function CardDefault() {
     };
     
     submit(allData, { method: "post" });
-    // console.log(weNeed);
     shopify.toast.show("Saved Successfully");
   }
 
