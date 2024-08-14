@@ -79,13 +79,7 @@ const DeliveryTableRow = ({ deliveryTableDetail }) => (
       <Text>{deliveryTableDetail.tags}</Text>
     </IndexTable.Cell>
     
-    {/* <IndexTable.Cell>
-      <Button variant="plain" tone="critical" onClick={() => {deleteData(deliveryTableDetail.id)}}>Remove</Button>
-    </IndexTable.Cell> */}
 
-    {/* <IndexTable.Cell>
-      <Button variant="plain" onClick={() => {console.log('Edit')}}>Edit</Button>
-    </IndexTable.Cell> */}
   </IndexTable.Row>
 );
 
