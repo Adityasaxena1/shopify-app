@@ -1,26 +1,68 @@
 {% assign avg_rating = block.settings.product.metafields.demo.avg_rating.value | round %}
 {% assign show_timer = block.settings.timer %}
 {% assign scheduled_days = app.metafields.delivery.delivery_date %}
+{%assign data = 'ratings.home.recommendationText' %}
+
+
+
+
 
 
 
 <span style="color:{{ block.settings.colour }}">
 
-  {{ block.settings.inline }}
-  <b>{{ scheduled_days }}</b>
-
-
+  {{ block.settings.inline }} 
+  <b><div id="prisma-data-container" style="display: inline;"></div></b>
+  
 </span>
 
 
 
-{% if show_timer %}
 
+
+{% if show_timer %}
   <img src="{{ "thumbs-up.png" | asset_img_url: '15x' }}" height="15" width="15" loading="lazy" >
   {{ 'ratings.home.recommendationText' | t }}
-
 {% endif %}
 
+
+{% comment %} <script src="{{ 'theme-extension.js' | asset_url }}"></script> {% endcomment %}
+
+<script>
+  
+  var productTags = {{ product.tags | json }};
+  var lowerCaseProductTags = productTags.map(tag => tag.toLowerCase());
+  const store_tag = document.querySelector('#prisma-data-container')
+
+  function getFormat(daysData) {
+    let today = new Date().toDateString();
+    let msec = Date.parse(today);
+    let days = Number(daysData) * 24 * 60 * 60 * 1000;
+    const d = new Date(Number(msec) + Number(days)).toDateString(); 
+    let inputDate = d.slice(0, 10);
+    return inputDate;
+  }
+
+  
+
+  fetch("https://serving-angel-snow-cms.trycloudflare.com/api/databaseData")
+    .then(response => response.json())
+    .then(data => {
+      if (data['data'].length > 0) {
+      for (let x in data['data']) {
+        const ownTag = data['data'][x]['tags'].toLowerCase();
+        const days = data['data'][x]['days']
+        if (ownTag == "all"){
+          store_tag.innerHTML = getFormat(days);
+        } else if (lowerCaseProductTags.includes(ownTag)) {
+          store_tag.innerHTML = getFormat(days);
+        }
+      }
+    }
+    })
+    .catch(error => console.error('Error fetching data:', error));
+
+</script>
 
 
 
@@ -30,10 +72,9 @@
   "name": "Show Delivery Date",
   "target": "section",
   "settings": [
-    { "type": "product", "id": "product", "label": "Product", "autofill": true },
-    { "type": "checkbox", "id": "timer", "label": "Show 24hrs Timer", "default": false, "info": "Add a 24hrs Count Down"},
-    { "type": "inline_richtext", "id": "inline", "label":"Change text", "default": "Estimated Delivery on" },
-    { "type": "color", "id": "colour", "label": "Date Colour", "default": "#121212"},
+    { "type": "checkbox", "id": "timer", "label": "Show 24hrs Timer", "default": false, "info": "Add a 24hrs Count Down" },
+    { "type": "inline_richtext", "id": "inline", "label":"Change text", "default": "Estimated Delivery on " },
+    { "type": "color", "id": "colour", "label": "Date Colour", "default": "#121212" }
   ]
 }
 
