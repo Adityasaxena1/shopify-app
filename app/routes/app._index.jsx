@@ -9,16 +9,26 @@ import {
 } from "@shopify/polaris";
 import React from "react";
 import { useNavigate, useLoaderData } from "react-router-dom";
-import { getAllData, createMetaField } from "../models/Schedule.server";
+import { getAllData } from "../models/Schedule.server";
 import { json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 
 export async function loader({ request }) {
   const { admin } = await authenticate.admin(request);
   const deliveryTableDetails = await getAllData();
-
+  // if (deliveryTableDetails.length === 0) {
+  //   await createMetaField( admin.graphql, input_tag = deliveryTableDetails[deliveryTableDetails.length -1]['tags'] );
+  // }
   return json({ deliveryTableDetails });
 }
+
+
+// export async function action({request}) {
+//   const { admin } = await authenticate.admin(request);
+// }
+
+
+
 
 const DeliveryTable = ({ deliveryTableDetails }) => (
   <IndexTable
@@ -33,7 +43,8 @@ const DeliveryTable = ({ deliveryTableDetails }) => (
       { title: "Shop Domain" },
       { title: "Days" },
       { title: "Date created" },
-      { title: "Tags" }
+      { title: "Tags" },
+      { title: "Button", hidden: true }
     ]}
     selectable={false}
   >
@@ -45,6 +56,7 @@ const DeliveryTable = ({ deliveryTableDetails }) => (
     ))}
   </IndexTable>
 );
+
 
 const DeliveryTableRow = ({ deliveryTableDetail }) => (
   <IndexTable.Row id={deliveryTableDetail.id} position={deliveryTableDetail.id}>
@@ -75,10 +87,14 @@ const DeliveryTableRow = ({ deliveryTableDetail }) => (
     <IndexTable.Cell>
       <Text>{deliveryTableDetail.tags}</Text>
     </IndexTable.Cell>
-
+    
     <IndexTable.Cell>
       <Button variant="plain" tone="critical" onClick={console.log('delete')}>Delete</Button>
     </IndexTable.Cell>
+
+    {/* <IndexTable.Cell>
+      <Button variant="plain" onClick={() => {console.log('Edit')}}>Edit</Button>
+    </IndexTable.Cell> */}
 
   </IndexTable.Row>
 );
@@ -89,7 +105,6 @@ export default function Index() {
 
   function handleScheduleDelivery() {
     navigate("/app/schedule");
-    
   }
 
   return (
