@@ -16,10 +16,7 @@ import { authenticate } from "../shopify.server";
 export async function loader({ request }) {
   const { admin } = await authenticate.admin(request);
   const deliveryTableDetails = await getAllData();
-  if (deliveryTableDetails.length === 0) {
-    await createMetaField( admin.graphql, input_tag = deliveryTableDetails[deliveryTableDetails.length -1 ]['tags'] );
-  }
-  
+
   return json({ deliveryTableDetails });
 }
 
@@ -78,7 +75,10 @@ const DeliveryTableRow = ({ deliveryTableDetail }) => (
     <IndexTable.Cell>
       <Text>{deliveryTableDetail.tags}</Text>
     </IndexTable.Cell>
-    
+
+    <IndexTable.Cell>
+      <Button variant="plain" tone="critical" onClick={console.log('delete')}>Delete</Button>
+    </IndexTable.Cell>
 
   </IndexTable.Row>
 );
