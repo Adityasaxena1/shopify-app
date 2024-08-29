@@ -11,7 +11,7 @@ import {
   LegacyStack,
   RadioButton,
 } from "@shopify/polaris";
-import { SearchIcon } from "@shopify/polaris-icons";
+// import { SearchIcon } from "@shopify/polaris-icons";
 
 import { useState, useCallback, useMemo } from "react";
 import React from "react";
@@ -19,6 +19,8 @@ import { useNavigate, useSubmit } from "react-router-dom";
 import putData, { getAllData } from "../models/Schedule.server";
 import { redirect } from "@remix-run/node";   
 import { authenticate } from "../shopify.server";
+import { json } from "@remix-run/node";
+
 
 
 
@@ -37,8 +39,9 @@ export async function action({ request }) {
     tags: formData.tags
   };
 
-  await putData(deliveryData, admin);
-  return redirect("/");
+  await putData(deliveryData);
+  return redirect("/app");
+  
 }
 
 
@@ -48,8 +51,18 @@ export async function action({ request }) {
 
 export async function loader({ request }) {
   const { admin } = await authenticate.admin(request);
+
   const deliveries = await getAllData();
-  return deliveries;
+
+  // const indays = deliveries[deliveries.length - 1]['days']
+  // const meta = await createMetaField(admin.graphql,deliveries[deliveries.length - 1]['days']);
+  // return { admin, indays };
+  // return json(meta);
+  // return json({ deliveries });
+  const response = json({deliveries})
+  return response;
+
+  // return new Response(JSON.stringify(deliveries));
 }
 
 
@@ -61,101 +74,119 @@ export async function loader({ request }) {
 
 
 
-function ComboboxExample({ inputValue, setInputValue }) {
-  const deselectedOptions = useMemo(
-    () => [
-      { value: "rustic", label: "rustic" },
-      { value: "antique", label: "antique" },
-      { value: "vinyl", label: "vinyl" },
-      { value: "vintage", label: "vintage" },
-      { value: "refurbished", label: "refurbished" },
-      { value: "wedding band", label: "wedding band" },
-    ],
+// function ComboboxExample({ inputValue, setInputValue }) {
+//   const deselectedOptions = useMemo(
+//     () => [
+//       { value: "rustic", label: "rustic" },
+//       { value: "antique", label: "antique" },
+//       { value: "vinyl", label: "vinyl" },
+//       { value: "vintage", label: "vintage" },
+//       { value: "refurbished", label: "refurbished" },
+//       { value: "wedding band", label: "wedding band" },
+//     ],
+//     [],
+//   );
+
+//   const [selectedOption, setSelectedOption] = useState();
+//   // const [inputValue, setInputValue] = useState("");
+//   const [options, setOptions] = useState(deselectedOptions);
+
+//   const escapeSpecialRegExCharacters = useCallback(
+//     (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+//     [],
+//   );
+
+//   const updateText = useCallback(
+//     (value) => {
+//       setInputValue(value);
+
+//       if (value === "") {
+//         setOptions(deselectedOptions);
+//         return;
+//       }
+
+//       const filterRegex = new RegExp(escapeSpecialRegExCharacters(value), "i");
+//       const resultOptions = deselectedOptions.filter((option) =>
+//         option.label.match(filterRegex),
+//       );
+//       setOptions(resultOptions);
+//     },
+//     [deselectedOptions, escapeSpecialRegExCharacters],
+//   );
+
+//   const updateSelection = useCallback(
+//     (selected) => {
+//       const matchedOption = options.find((option) => {
+//         return option.value.match(selected);
+//       });
+
+//       setSelectedOption(selected);
+//       setInputValue((matchedOption && matchedOption.label) || "");
+//     },
+//     [options],
+//   );
+
+//   const optionsMarkup =
+//     options.length > 0
+//       ? options.map((option) => {
+//           const { label, value } = option;
+
+//           return (
+//             <Listbox.Option
+//               key={`${value}`}
+//               value={value}
+//               selected={selectedOption === value}
+//               accessibilityLabel={label}
+//             >
+//               {label}
+//             </Listbox.Option>
+//           );
+//         })
+//       : null;
+
+//   return (
+//     <div style={{ height: "50px", paddingTop: "20px" }}>
+//       <Combobox
+//         activator={
+//           <Combobox.TextField
+//             prefix={<Icon source={SearchIcon} />}
+//             onChange={updateText}
+//             label="Search tags"
+//             labelHidden
+//             value={inputValue}
+//             placeholder="Search tags"
+//             autoComplete="off"
+//           />
+//         }
+//       >
+//         {options.length > 0 ? (
+//           <Listbox onSelect={updateSelection}>{optionsMarkup}</Listbox>
+//         ) : null}
+//       </Combobox>
+//     </div>
+//   );
+// }
+
+
+
+function TextFieldExample({ inputValue, setInputValue}) {
+  
+
+  const handleChange = useCallback(
+    (newValue) => setInputValue(newValue),
+   
     [],
   );
-
-  const [selectedOption, setSelectedOption] = useState();
-  const [options, setOptions] = useState(deselectedOptions);
-
-  const escapeSpecialRegExCharacters = useCallback(
-    (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-    [],
-  );
-
-  const updateText = useCallback(
-    (value) => {
-      setInputValue(value);
-
-      if (value === "") {
-        setOptions(deselectedOptions);
-        return;
-      }
-
-      const filterRegex = new RegExp(escapeSpecialRegExCharacters(value), "i");
-      const resultOptions = deselectedOptions.filter((option) =>
-        option.label.match(filterRegex),
-      );
-      setOptions(resultOptions);
-    },
-    [deselectedOptions, escapeSpecialRegExCharacters],
-  );
-
-  const updateSelection = useCallback(
-    (selected) => {
-      const matchedOption = options.find((option) => {
-        return option.value.match(selected);
-      });
-
-      setSelectedOption(selected);
-      setInputValue((matchedOption && matchedOption.label) || "");
-    },
-    [options],
-  );
-
-  const optionsMarkup =
-    options.length > 0
-      ? options.map((option) => {
-          const { label, value } = option;
-
-          return (
-            <Listbox.Option
-              key={`${value}`}
-              value={value}
-              selected={selectedOption === value}
-              accessibilityLabel={label}
-            >
-              {label}
-            </Listbox.Option>
-          );
-        })
-      : null;
 
   return (
-    <div style={{ height: "50px", paddingTop: "20px" }}>
-      <Combobox
-        activator={
-          <Combobox.TextField
-            prefix={<Icon source={SearchIcon} />}
-            onChange={updateText}
-            label="Search tags"
-            labelHidden
-            value={inputValue}
-            placeholder="Search tags"
-            autoComplete="off"
-          />
-        }
-      >
-        {options.length > 0 ? (
-          <Listbox onSelect={updateSelection}>{optionsMarkup}</Listbox>
-        ) : null}
-      </Combobox>
-    </div>
+    <TextField
+      label="Enter your Tag"
+      value={inputValue}
+      onChange={handleChange}
+      autoComplete="off"
+    />
   );
 }
-
-
-
-
 
 
 
@@ -188,17 +219,10 @@ function RadioButtonExample({ inputValue, setInputValue }) {
         />
       </LegacyStack>
 
-      {value === "tags" && <ComboboxExample  inputValue={inputValue} setInputValue={setInputValue}/>}
+      {value === "tags" && <TextFieldExample  inputValue={inputValue} setInputValue={setInputValue} />}
     </>
   );
 }
-
-
-
-
-
-
-
 
 
 
@@ -208,8 +232,11 @@ export default function CardDefault() {
   const submit = useSubmit();
   const navigate = useNavigate();
 
+  // const weNeed = useLoaderData();
+
   const [value, setValue] = useState();
   const [inputValue, setInputValue] = useState("");
+  
   const handleChange = useCallback((newValue) => setValue(newValue), []);
 
   function handleSave() {
@@ -217,11 +244,12 @@ export default function CardDefault() {
       days: value ? value : 7,
       tags: inputValue == "" ? "all" : inputValue
     };
-    
     submit(allData, { method: "post" });
-    shopify.toast.show("Saved Successfully");
+    // console.log(weNeed);
+    shopify.toast.show("Saved Successfully"); 
   }
 
+  
   return (
     <Form method="post">
       <Card padding="500">
@@ -235,7 +263,7 @@ export default function CardDefault() {
             placeholder="Default 7 Days"
             min="1"
           />
-          <RadioButtonExample inputValue={inputValue} setInputValue={setInputValue}/>
+          <RadioButtonExample inputValue={inputValue} setInputValue={setInputValue} />
           <ButtonGroup gap="loose">
             <Button
               onClick={() => {
@@ -244,7 +272,7 @@ export default function CardDefault() {
             >
               Cancel
             </Button>
-            <Button variant="primary" onClick={handleSave} type="submit">
+            <Button variant="primary" onClick={handleSave} type="submit" >
               Save
             </Button>
           </ButtonGroup>
